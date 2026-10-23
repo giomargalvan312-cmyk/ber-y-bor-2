@@ -1,0 +1,502 @@
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Odisea de Ber y Bor: Más Allá de la Distancia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background-color: #07090e;
+            color: #f3f4f6;
+            user-select: none;
+            overflow-x: hidden;
+        }
+        .pixelated {
+            image-rendering: pixelated;
+        }
+        .retro-box {
+            border: 4px solid #b45309;
+            box-shadow: 0 0 0 4px #07090e, 0 0 0 8px #78350f;
+            background: #111827;
+        }
+        .retro-button {
+            border: 3px solid #f3f4f6;
+            box-shadow: 0 4px 0 #374151;
+            transition: all 0.1s ease;
+        }
+        .retro-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #374151;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b45309;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-4">
+
+    <header class="w-full max-w-4xl text-center py-4">
+        <h1 class="text-xs md:text-sm text-yellow-400 mb-2 tracking-wider">LA ODISEA DE BER Y BOR</h1>
+        <p class="text-[9px] md:text-[10px] text-amber-300">Más allá de la distancia y el tiempo: Una historia épica de amor y lealtad de 8 bits</p>
+    </header>
+
+    <main id="game-container" class="w-full max-w-3xl retro-box p-6 rounded-none my-auto relative min-h-[550px] flex flex-col justify-between">
+        
+        <!-- Screen Header / Status -->
+        <div id="status-bar" class="flex justify-between items-center border-b-2 border-amber-900 pb-3 mb-4 text-[9px] md:text-[10px] text-amber-200">
+            <div>CAPÍTULO: <span id="chapter-title" class="text-yellow-400">Prólogo</span></div>
+            <div>ETAPA: <span id="stage-num" class="text-cyan-300">1/6</span></div>
+        </div>
+
+        <!-- Main Screen Content Area -->
+        <div id="screen-content" class="flex-grow flex flex-col items-center justify-center text-center space-y-6">
+            <!-- Dynamic content injected via JS -->
+        </div>
+
+        <!-- Dialogue / Guide Box -->
+        <div id="guide-box" class="mt-6 border-2 border-dashed border-amber-500 p-4 bg-[#07090e] flex items-start gap-4 text-left hidden">
+            <div id="guide-avatar" class="text-3xl shrink-0 p-2 bg-gray-900 border border-amber-700">🐶</div>
+            <div>
+                <div id="guide-name" class="text-xs text-amber-400 mb-1">Guía Protector</div>
+                <div id="guide-text" class="text-[9px] md:text-[10px] text-gray-200 leading-relaxed"></div>
+            </div>
+        </div>
+
+        <!-- Controls / Actions Area -->
+        <div id="action-area" class="mt-6 flex flex-wrap gap-3 justify-center">
+            <!-- Dynamic buttons injected via JS -->
+        </div>
+    </main>
+
+    <footer class="w-full max-w-4xl text-center py-2 text-[8px] text-gray-500">
+        Una leyenda medieval y universitaria • Creado con amor para Ber y Bor
+    </footer>
+
+    <script>
+        const gameData = {
+            chapter: 0,
+            score: 0,
+            guides: [
+                { 
+                    name: 'Conchita', 
+                    desc: 'Perrita positiva, que brinda apoyo emocional y fuerza, cuando todo parece gris.', 
+                    icon: '🐩' 
+                },
+                { 
+                    name: 'Vaguito', 
+                    desc: 'Perrito con forma de alcancía de feria, leal y siempre firme para proteger a Ber y Bor, es el centinela que cuida y nos protege.', 
+                    icon: '🐾' 
+                }
+            ],
+            triviaPools: {
+                universidad: [
+                    {
+                        q: "¿Cuál es el cimiento sagrado sobre el cual Ber y Bor edificaron su amistad inquebrantable en la universidad?",
+                        options: [
+                            "A) Compartir apuntes y largas horas de estudio y risas.",
+                            "B) Competir en torneos oscuros de ajedrez mágico.",
+                            "C) Huir de las bestias del campus central."
+                        ],
+                        correct: 0,
+                        feedback: "¡Exacto! Compartir cada instante en la universidad forjó una complicidad eterna."
+                    },
+                    {
+                        q: "En los pasillos universitarios, ¿qué era lo que más caracterizaba las jornadas de Ber y Bor?",
+                        options: [
+                            "A) Estar separados por murallas invisibles.",
+                            "B) Compartir absolutamente todo lo que hacían y sentían.",
+                            "C) No cruzarse jamás en los laboratorios."
+                        ],
+                        correct: 1,
+                        feedback: "¡Así es! Compartían proyectos, tiempo y sueños sin reservas."
+                    }
+                ],
+                distancia: [
+                    {
+                        q: "Cuando el destino y los caminos profesionales separaron sus residencias, ¿cómo desafiaron Ber y Bor la distancia?",
+                        options: [
+                            "A) Olvidándose de los viejos tiempos universitarios.",
+                            "B) Haciendo siempre tiempo sagrado para reencontrarse en cada temporada de vacaciones.",
+                            "C) Esperando un milagro sin comunicarse."
+                        ],
+                        correct: 1,
+                        feedback: "¡Correcto! Cada temporada de vacaciones era el faro que marcaba el reencuentro anhelado."
+                    },
+                    {
+                        q: "¿Qué sentía Bor en su interior durante las largas temporadas en que la distancia los mantenía apartados?",
+                        options: [
+                            "A) Que sus días siempre eran mejores y más luminosos cuando ella estaba a su lado.",
+                            "B) Indiferencia ante el paso de los días.",
+                            "C) Que el trabajo bastaba para llenar su alma."
+                        ],
+                        correct: 0,
+                        feedback: "¡Verdad absoluta! Sus días siempre fueron mejores con ella."
+                    }
+                ],
+                decision: [
+                    {
+                        q: "¿Qué revelación divina experimentó Bor al comprender el verdadero valor de su compañera?",
+                        options: [
+                            "A) Que debía buscar nuevas tierras lejanas él solo.",
+                            "B) Que nunca más en su vida quiso estar separado de ella ni un solo instante.",
+                            "C) Que el tiempo borra los recuerdos de antaño."
+                        ],
+                        correct: 1,
+                        feedback: "¡Insuperable! Comprendió que su lugar era junto a ella para siempre."
+                    },
+                    {
+                        q: "¿Cómo se consumó la gran decisión de Bor para transformar su destino junto a Ber?",
+                        options: [
+                            "A) Se lanzó con valor a cambiar su residencia y su vida entera.",
+                            "B) Mandó cartas lejanas sin cambiar de rumbo.",
+                            "C) Esperó pacientemente otros diez años de distancia."
+                        ],
+                        correct: 0,
+                        feedback: "¡Valiente y definitivo! Se lanzó a un nuevo hogar y una nueva vida por ella."
+                    }
+                ]
+            }
+        };
+
+        // DOM Elements
+        const chapterTitleEl = document.getElementById('chapter-title');
+        const stageNumEl = document.getElementById('stage-num');
+        const screenContentEl = document.getElementById('screen-content');
+        const guideBoxEl = document.getElementById('guide-box');
+        const guideAvatarEl = document.getElementById('guide-avatar');
+        const guideNameEl = document.getElementById('guide-name');
+        const guideTextEl = document.getElementById('guide-text');
+        const actionAreaEl = document.getElementById('action-area');
+
+        function showGuide(name, icon, text) {
+            guideBoxEl.classList.remove('hidden');
+            guideNameEl.textContent = name;
+            guideAvatarEl.textContent = icon;
+            guideTextEl.textContent = text;
+        }
+
+        function hideGuide() {
+            guideBoxEl.classList.add('hidden');
+        }
+
+        function startPrologue() {
+            gameData.chapter = 0;
+            chapterTitleEl.textContent = "Orígenes en la Universidad";
+            stageNumEl.textContent = "1/6";
+            hideGuide();
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4">
+                    <div class="text-4xl">🏛️✨🎓</div>
+                    <h2 class="text-xs md:text-sm text-yellow-400">EL COMIENZO DE UNA LEYENDA</h2>
+                    <p class="text-[9px] md:text-[10px] text-gray-300 leading-relaxed max-w-lg mx-auto">
+                        En los vibrantes pasillos de la gran academia universitaria, las almas de <span class="text-cyan-300 font-bold">Ber</span> y <span class="text-yellow-300 font-bold">Bor</span> se cruzaron por capricho del destino. Se convirtieron en mejores amigos al instante, compartiendo cada proyecto, cada risa y cada momento de sus días.
+                    </p>
+                    <p class="text-[9px] md:text-[10px] text-amber-300">
+                        Junto a ellos, resguardan el camino sus fieles guardianes: <span class="text-gray-200">Conchita</span> (la perrita positiva que brinda apoyo emocional y fuerza cuando todo parece gris) y <span class="text-amber-200">Vaguito</span> (el perrito con forma de alcancía de feria, leal y siempre firme para proteger a Ber y Bor, el centinela que cuida y nos protege).
+                    </p>
+                </div>
+            `;
+
+            actionAreaEl.innerHTML = `
+                <button onclick="meetGuidesScene()" class="retro-button bg-amber-600 hover:bg-amber-500 text-white text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                    Conocer el Consejo de los Guías 🐾
+                </button>
+            `;
+        }
+
+        function meetGuidesScene() {
+            screenContentEl.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-center gap-8 text-4xl">
+                        <span>🐩</span><span>🐾</span>
+                    </div>
+                    <h2 class="text-xs md:text-sm text-cyan-300">LOS FIELES GUARDIANES DE LA HISTORIA</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left text-[9px] bg-[#1f2937] p-4 border border-amber-800">
+                        <div>
+                            <span class="text-yellow-400 font-bold">Conchita:</span><br>
+                            ${gameData.guides[0].desc}
+                        </div>
+                        <div>
+                            <span class="text-amber-300 font-bold">Vaguito:</span><br>
+                            ${gameData.guides[1].desc}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            showGuide("Conchita & Vaguito", "🐶", "¡Guau! Hemos acompañado a Ber y Bor desde sus días universitarios. ¡Prepárense, pues el sendero pondrá a prueba su memoria y su amor a través de las eras!");
+
+            actionAreaEl.innerHTML = `
+                <button onclick="startUniversityTrivia(0)" class="retro-button bg-yellow-600 hover:bg-yellow-500 text-black font-bold text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                    Comenzar Reto: Etapa Universitaria 📚
+                </button>
+            `;
+        }
+
+        function startUniversityTrivia(index) {
+            gameData.chapter = 1;
+            chapterTitleEl.textContent = "Trivia Universitaria";
+            stageNumEl.textContent = "2/6";
+
+            const qObj = gameData.triviaPools.universidad[index];
+            if (!qObj) {
+                startDistancePhase();
+                return;
+            }
+
+            showGuide("Conchita", "🐩", "¡Confía en tu memoria, Bor! Los años universitarios con Ber dejaron huellas imborrables en nuestros corazones.");
+
+            let optionsHtml = qObj.options.map((opt, i) => `
+                <button onclick="checkTriviaAnswer('universidad', ${index}, ${i})" class="retro-button bg-gray-800 hover:bg-gray-700 text-gray-200 text-[9px] md:text-[10px] p-3 text-left w-full">
+                    ${opt}
+                </button>
+            `).join('');
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4 w-full max-w-lg mx-auto text-left">
+                    <div class="text-xs text-yellow-400 text-center mb-2">PREGUNTA DE SABIDURÍA UNIVERSITARIA (${index + 1}/${gameData.triviaPools.universidad.length})</div>
+                    <p class="text-[9px] md:text-[10px] text-gray-200 leading-relaxed bg-[#1f2937] p-3 border border-amber-800">
+                        ${qObj.q}
+                    </p>
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+            actionAreaEl.innerHTML = "";
+        }
+
+        function startDistancePhase() {
+            gameData.chapter = 2;
+            chapterTitleEl.textContent = "El Tiempo y la Distancia";
+            stageNumEl.textContent = "3/6";
+
+            showGuide("Vaguito", "🐾", "¡Alerta en el horizonte! El tiempo y la distancia intentaron separar los caminos, pero Ber y Bor siempre hicieron tiempo para reunirse en vacaciones.");
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4">
+                    <div class="text-4xl">⏳🌍🚂</div>
+                    <h2 class="text-xs md:text-sm text-cyan-300">LAS VACACIONES DE REENCUENTRO</h2>
+                    <p class="text-[9px] md:text-[10px] text-gray-300 leading-relaxed max-w-lg mx-auto">
+                        Aunque las obligaciones de la vida y la geografía interpusieron kilómetros entre ambos, cada temporada de vacaciones era sagrada. El tiempo se detenía cuando se veían, reavivando la certeza de que sus días siempre fueron mejores el uno al lado del otro.
+                    </p>
+                </div>
+            `;
+
+            actionAreaEl.innerHTML = `
+                <button onclick="startDistanceTrivia(0)" class="retro-button bg-cyan-600 hover:bg-cyan-500 text-white text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                    Iniciar Trivia de Distancia y Vacaciones ✈️
+                </button>
+            `;
+        }
+
+        function startDistanceTrivia(index) {
+            gameData.chapter = 3;
+            chapterTitleEl.textContent = "Trivia de la Distancia";
+            stageNumEl.textContent = "4/6";
+
+            const qObj = gameData.triviaPools.distancia[index];
+            if (!qObj) {
+                startDecisionPhase();
+                return;
+            }
+
+            showGuide("Vaguito", "🐾", "Como centinela que cuida y protege este vínculo, sé muy bien cuánto significaba cada reencuentro vacacional.");
+
+            let optionsHtml = qObj.options.map((opt, i) => `
+                <button onclick="checkTriviaAnswer('distancia', ${index}, ${i})" class="retro-button bg-gray-800 hover:bg-gray-700 text-gray-200 text-[9px] md:text-[10px] p-3 text-left w-full">
+                    ${opt}
+                </button>
+            `).join('');
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4 w-full max-w-lg mx-auto text-left">
+                    <div class="text-xs text-cyan-400 text-center mb-2">PREGUNTA SOBRE LA DISTANCIA (${index + 1}/${gameData.triviaPools.distancia.length})</div>
+                    <p class="text-[9px] md:text-[10px] text-gray-200 leading-relaxed bg-[#1f2937] p-3 border border-amber-800">
+                        ${qObj.q}
+                    </p>
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+            actionAreaEl.innerHTML = "";
+        }
+
+        function startDecisionPhase() {
+            gameData.chapter = 4;
+            chapterTitleEl.textContent = "El Gran Salto de Vida";
+            stageNumEl.textContent = "5/6";
+
+            showGuide("Conchita", "🐩", "¡Ha llegado el momento más hermoso! Cuando Bor percibió que la necesitaba cada segundo en su vida, tomó la decisión que transformaría su destino para siempre.");
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4">
+                    <div class="text-4xl">🌟🏠💖</div>
+                    <h2 class="text-xs md:text-sm text-yellow-400">NUNCA MÁS LEJOS DE ELLA</h2>
+                    <p class="text-[9px] md:text-[10px] text-gray-300 leading-relaxed max-w-lg mx-auto">
+                        Hubo un instante definitivo. Bor comprendió con absoluta claridad que sus días jamás volverían a estar completos a la distancia. Se lanzó con coraje a un cambio total de residencia y de vida, prometiendo que en el momento en que se dio cuenta, <span class="text-yellow-300 font-bold">nunca más quiso estar lejos de Ber</span>.
+                    </p>
+                </div>
+            `;
+
+            actionAreaEl.innerHTML = `
+                <button onclick="startDecisionTrivia(0)" class="retro-button bg-purple-600 hover:bg-purple-500 text-white text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                    Desafío Final de la Decisión 👑
+                </button>
+            `;
+        }
+
+        function startDecisionTrivia(index) {
+            gameData.chapter = 4;
+            chapterTitleEl.textContent = "Trivia del Gran Salto";
+            stageNumEl.textContent = "5/6";
+
+            const qObj = gameData.triviaPools.decision[index];
+            if (!qObj) {
+                showGrandFinale();
+                return;
+            }
+
+            showGuide("Conchita", "🐩", "¡El amor y la fuerza disipan cualquier gris en el camino! Responde con el corazón en la mano.");
+
+            let optionsHtml = qObj.options.map((opt, i) => `
+                <button onclick="checkTriviaAnswer('decision', ${index}, ${i})" class="retro-button bg-gray-800 hover:bg-gray-700 text-gray-200 text-[9px] md:text-[10px] p-3 text-left w-full">
+                    ${opt}
+                </button>
+            `).join('');
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4 w-full max-w-lg mx-auto text-left">
+                    <div class="text-xs text-purple-400 text-center mb-2">PREGUNTA DE DECISIÓN SUPREMA (${index + 1}/${gameData.triviaPools.decision.length})</div>
+                    <p class="text-[9px] md:text-[10px] text-gray-200 leading-relaxed bg-[#1f2937] p-3 border border-amber-800">
+                        ${qObj.q}
+                    </p>
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+            actionAreaEl.innerHTML = "";
+        }
+
+        function checkTriviaAnswer(poolKey, qIndex, selectedIndex) {
+            const qObj = gameData.triviaPools[poolKey][qIndex];
+            const isCorrect = (selectedIndex === qObj.correct);
+
+            if (isCorrect) {
+                gameData.score += 100;
+                screenContentEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="text-4xl text-green-400">✨ CORRECTO ✨</div>
+                        <h2 class="text-xs md:text-sm text-green-400">¡SABIDURÍA COMPROBADA!</h2>
+                        <p class="text-[9px] md:text-[10px] text-gray-200 bg-[#1f2937] p-4 border border-green-700 max-w-md mx-auto">
+                            ${qObj.feedback}
+                        </p>
+                    </div>
+                `;
+
+                showGuide("Vaguito", "🐾", "¡Guau, excelente respuesta! El centinela avala tu sabiduría.");
+
+                let nextCallback = "";
+                if (poolKey === 'universidad') {
+                    if (qIndex + 1 < gameData.triviaPools.universidad.length) {
+                        nextCallback = `startUniversityTrivia(${qIndex + 1})`;
+                    } else {
+                        nextCallback = `startDistancePhase()`;
+                    }
+                } else if (poolKey === 'distancia') {
+                    if (qIndex + 1 < gameData.triviaPools.distancia.length) {
+                        nextCallback = `startDistanceTrivia(${qIndex + 1})`;
+                    } else {
+                        nextCallback = `startDecisionPhase()`;
+                    }
+                } else if (poolKey === 'decision') {
+                    if (qIndex + 1 < gameData.triviaPools.decision.length) {
+                        nextCallback = `startDecisionTrivia(${qIndex + 1})`;
+                    } else {
+                        nextCallback = `showGrandFinale()`;
+                    }
+                }
+
+                actionAreaEl.innerHTML = `
+                    <button onclick="${nextCallback}" class="retro-button bg-green-600 hover:bg-green-500 text-white text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                        Continuar la Travesía ⚔️
+                    </button>
+                `;
+
+            } else {
+                screenContentEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="text-4xl text-red-400">❌</div>
+                        <h2 class="text-xs md:text-sm text-red-400">RESPUESTA INCORRECTA</h2>
+                        <p class="text-[9px] md:text-[10px] text-gray-300">
+                            Conchita se acerca para brindarte apoyo emocional y fuerza en este momento gris. ¡Inténtalo de nuevo con el corazón!
+                        </p>
+                    </div>
+                `;
+
+                let retryCallback = "";
+                if (poolKey === 'universidad') retryCallback = `startUniversityTrivia(${qIndex})`;
+                if (poolKey === 'distancia') retryCallback = `startDistanceTrivia(${qIndex})`;
+                if (poolKey === 'decision') retryCallback = `startDecisionTrivia(${qIndex})`;
+
+                actionAreaEl.innerHTML = `
+                    <button onclick="${retryCallback}" class="retro-button bg-gray-700 hover:bg-gray-600 text-white text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                        Reintentar Pregunta 🔄
+                    </button>
+                `;
+            }
+        }
+
+        function showGrandFinale() {
+            gameData.chapter = 5;
+            chapterTitleEl.textContent = "El Tesoro Supremo";
+            stageNumEl.textContent = "6/6";
+
+            hideGuide();
+
+            screenContentEl.innerHTML = `
+                <div class="space-y-4 p-4 bg-[#1f2937] border-2 border-yellow-400 max-w-xl mx-auto">
+                    <div class="text-4xl">👑💖✨</div>
+                    <h2 class="text-xs md:text-sm text-yellow-400">LA GRAN REVELACIÓN DEL DESTINO</h2>
+                    <p class="text-[9px] md:text-[10px] text-gray-200 leading-relaxed">
+                        Tras superar las pruebas universitarias, los años de distancia y el salto definitivo de vida, Ber y Bor llegan al altar sagrado del templo. El cofre legendario se abre con destellos de 8 bits...
+                    </p>
+                    <p class="text-[9px] md:text-[10px] text-amber-300 leading-relaxed font-bold mt-2">
+                        Dentro no hay oro material, sino la verdad absoluta: <br>
+                        <span class="text-cyan-300">"El tiempo y la distancia intentaron poner a prueba su historia, pero al final, Bor comprendió que sus días siempre fueron mejores con ella, y que nunca más quiso estar lejos de Ber."</span>
+                    </p>
+                    <p class="text-[9px] md:text-[10px] text-gray-300 italic mt-2">
+                        Conchita y Vaguito vigilan firmes y felices, sabiendo que el amor verdadero ha triunfado para siempre.
+                    </p>
+                </div>
+            `;
+
+            showGuide("Conchita & Vaguito", "🐶", "¡Guau, guau! ¡Triunfó el amor! Juntos Ber y Bor han demostrado que ninguna distancia puede apagar un vínculo tan eterno.");
+
+            actionAreaEl.innerHTML = `
+                <button onclick="startPrologue()" class="retro-button bg-amber-600 hover:bg-amber-500 text-white text-[9px] md:text-[10px] py-3 px-6 cursor-pointer">
+                    Volver a Vivir la Odisea 🎮
+                </button>
+            `;
+        }
+
+        // Initialize game on load
+        window.onload = function() {
+            startPrologue();
+        };
+    </script>
+</body>
+</html>
